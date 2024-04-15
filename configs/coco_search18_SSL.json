@@ -1,0 +1,123 @@
+{
+	"Data": {
+		"im_w": 512,
+		"im_h": 320,
+		"patch_num": [
+			32,
+			20
+		],
+		"patch_size": [
+			16,
+			16
+		],
+		"patch_count": 640,
+		"fovea_radius": 2,
+		"IOR_size": 1,
+		"max_traj_length": 20,
+		"TAP": "TAP",
+		"stop_sampling_ratio": 0.5,
+		"has_stop": true,
+		"use_action_map": false,
+		"use_DCB_target": false,
+		"sem_seq_dir": "semantic_seq/",
+		"DCB_dir": "DCBs/HR/",
+		"subject": -1,
+		"prior_maps_dir": "prior_maps_uniform.npy",
+		"coco_anno_dir": "coco_annotations/",
+		"backbone_config": "./config/resnet50.yaml",
+		"use_foveal_map": false,
+		"gt_det_map_scale": 1,
+		"out_of_subject_eval": false,
+		"blur_slope": 0.2,
+		"discretize_fix": true,
+		"cortical_magnify": false,
+		"cover_ratio": 0.5,
+		"multi_scale_input": false,
+		"matchness_prediction": true,
+		"include_freeview": false,
+		"exclude_wrong_trials": false,
+		"pad_idx": 0,
+		"eos_idx": 1,
+		"special_symbols": [
+			"<pad>",
+			"<bos>"
+		]
+	},
+	"Train": {
+		"train_backbone": false,
+		"use_dino_pretrained_model": false,
+		"dropout": 0.5,
+		"losses": [
+			"next_fix_pred"
+		],
+		"lr_steps": [
+			50,
+			100
+		],
+		"obj_rec_weight": 1.0,
+		"task_pred_weight": 1.0,
+		"use_sinkhorn": false,
+		"mismatch_cls": 1.0,
+		"zero_shot": false,
+		"parallel": false,
+		"balance": false,
+		"repr": "FFN",
+		"mix_match": false,
+		"gamma": 0.8,
+		"batch_size": 128,
+		"n_workers": 16,
+		"stop_criteria": "SASA",
+		"log_dir": "/home/zhiboy/assets/R50_TAP_transformer_multi_fixonly_lrstep50_dec1_sepArch_symW0",
+		"max_iters": 40000,
+		"checkpoint_every": 5000,
+		"max_checkpoints": 5,
+		"evaluate_every": 1000,
+		"replay_memory": 5000,
+		"initial_memory": 512,
+		"init_temp": 0.005,
+		"use_target_network": true,
+		"critic_target_update_frequency": 1,
+		"adam_lr": 1e-4,
+		"adam_betas": [
+			0.9,
+			0.999
+		],
+		"critic_tau": 0.01,
+		"alpha": 0.5,
+		"type": "iq",
+		"div": "kl_fix",
+		"value_loss": "value",
+		"use_chi": true,
+		"use_det_loss": true,
+		"det_loss_weight": 0.1,
+		"use_foveal_weight": false,
+		"grad_pen": false,
+		"regularize": false,
+		"lambda_gp": 10,
+		"mix_coeff": 1
+	},
+	"RL_algo": {
+		"name": "ppo",
+		"buffer_size": 16,
+		"num_aux_epoch": 9,
+		"lr": 5e-04,
+		"clip_param": 0.2,
+		"num_epoch": 2,
+		"batch_size": 16,
+		"value_coef": 1.0,
+		"entropy_coef": 0.05
+	},
+	"Model": {
+		"name": "VDTransformer",
+		"embedding_dim": 384,
+		"n_heads": 2,
+		"n_dec_layers": 6,
+		"n_enc_layers": 1,
+		"hidden_dim": 512,
+		"history_emb_size": 1,
+		"num_output_layers": 1,
+		"separate_fix_arch": false,
+		"history_emb_mtd": "normalized_num_fixs",
+		"checkpoint": "/home/zhiboy/assets/R50_TAP_transformer_multi_lrstep50_recW0.1/ckp_39999.pt"
+	}
+}

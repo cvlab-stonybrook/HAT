@@ -1,0 +1,13 @@
+MODEL:
+  BACKBONE:
+    FREEZE_AT: 0
+    NAME: "build_resnet_backbone"
+  WEIGHTS: "/data/add_disk0/zbyang/projects/scanpath_prediction_all/pretrained_models/coco/M2F_R50.pkl"
+  PIXEL_MEAN: [123.675, 116.280, 103.530]
+  PIXEL_STD: [58.395, 57.120, 57.375]
+  RESNETS:
+    DEPTH: 50
+    STEM_OUT_CHANNELS: 64
+    STRIDE_IN_1X1: False
+    OUT_FEATURES: ["res2", "res3", "res4", "res5"]
+    # NORM: "SyncBN"
