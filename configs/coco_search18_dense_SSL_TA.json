@@ -25,7 +25,7 @@
 	  "subject": -1,
 	  "prior_maps_dir": "prior_maps_uniform.npy",
 	  "coco_anno_dir": "coco_annotations/",
-	  "backbone_config": "/data/add_disk0/zbyang/projects/scanpath_prediction_all/configs/resnet50.yaml",
+	  "backbone_config": "./configs/resnet50.yaml",
 	  "pixel_decoder": "MSD",
 	  "use_foveal_map": false,
 	  "gt_det_map_scale": 1,
@@ -77,7 +77,7 @@
 	  "batch_size": 32,
 	  "n_workers": 20,
 	  "stop_criteria": "SASA",
-	  "log_dir": "./assets/R50_TA_noSelfAtt_trainPixelDecoder_sepFeatProj_outP4",
+	  "log_dir": "./assets/R50_HAT_TA",
 	  "transfer_learn": "none",
 	  "freeze_trained_params": false,
 	  "resume_training": false,
@@ -137,6 +137,6 @@
 	  ],
 	  "separate_fix_arch": true,
 	  "history_emb_mtd": "normalized_num_fixs",
-	  "checkpoint": "ckp_29999.pt"
+	  "checkpoint": ""
 	}
   }
