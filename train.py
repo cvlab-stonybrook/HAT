@@ -317,9 +317,9 @@ if __name__ == '__main__':
     hparams.Model.name = args.model
     hparams.Train.transfer_learn = args.transfer_learn
     dir = os.path.dirname(args.hparams)
-    hparams_tp = JsonConfig(os.path.join(dir, 'coco_search18_TP.json'))
-    hparams_ta = JsonConfig(os.path.join(dir, 'coco_search18_TA.json'))
-    hparams_fv = JsonConfig(os.path.join(dir, 'coco_search18_FV.json'))
+    hparams_tp = JsonConfig(os.path.join(dir, 'coco_search18_dense_SSL_TP.json'))
+    hparams_ta = JsonConfig(os.path.join(dir, 'coco_search18_dense_SSL_TA.json'))
+    hparams_fv = JsonConfig(os.path.join(dir, 'coco_freeview_dense_SSL.json'))
 
     dataset_root = args.dataset_root
     if dataset_root[-1] == '/':
