@@ -27,7 +27,7 @@
 		"subject": -1,
 		"prior_maps_dir": "prior_maps_uniform.npy",
 		"coco_anno_dir": "coco_annotations/",
-		"backbone_config": "/data/add_disk0/zbyang/projects/scanpath_prediction_all/configs/resnet50.yaml",
+		"backbone_config": "./configs/resnet50.yaml",
 		"pixel_decoder": "MSD",
 		"use_foveal_map": false,
 		"gt_det_map_scale": 1,

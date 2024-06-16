@@ -2,7 +2,7 @@ MODEL:
   BACKBONE:
     FREEZE_AT: 0
     NAME: "build_resnet_backbone"
-  WEIGHTS: "/data/add_disk0/zbyang/projects/scanpath_prediction_all/pretrained_models/coco/M2F_R50.pkl"
+  WEIGHTS: "pretrained_models/M2F_R50.pkl"
   PIXEL_MEAN: [123.675, 116.280, 103.530]
   PIXEL_STD: [58.395, 57.120, 57.375]
   RESNETS:
