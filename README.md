@@ -3,13 +3,12 @@ CVPR 2024 "Unifying Top-down and Bottom-up Scanpath Prediction Using Transformer
 
 #### Installation
  - Install [Detectron2](https://github.com/facebookresearch/detectron2)
-   - Download the pretrained [ResNet50]() weights to `./pretrained_checkpoints/`
  - Install MSDeformableAttn:
    ```
    cd ./scanpath_prediction_all/sptransformer/pixel_decoder/ops
    sh make.sh
    ```
- - Download necessary pretrained models with the following python code
+ - Download pretrained model weights (ResNet-50 and Deformable Transformer) with the following python code
    ```
     if not os.path.exists("./pretrained_models/"):
         os.mkdir('./pretrained_models')
