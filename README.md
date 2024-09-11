@@ -23,7 +23,7 @@ CVPR 2024 "Unifying Top-down and Bottom-up Scanpath Prediction Using Transformer
 - Download data from https://drive.google.com/drive/folders/1GOmWlDpG6Lh7iPlt9Hi9GWZ4BAfwhmHR?usp=drive_link.
 #### Try out the [demo code](https://github.com/cvlab-stonybrook/HAT/blob/main/demo.ipynb) to generate a scanpath for your test image!
 #### Commands
-- Train a model with
+- Train a model on COCO-Search18 with
     ```
     python train.py --hparams ./configs/coco_search18_dense_SSL.json --dataset-root <dataset_root> 
     ```
