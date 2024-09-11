@@ -29,7 +29,7 @@ CVPR 2024 "Unifying Top-down and Bottom-up Scanpath Prediction Using Transformer
     ```
 - Steps to train HAT on your custom dataset:
 1.	Modify the configuration file: Update the values for *Data.name, Data.TAP, and Data.max_traj_length* in the config file to match your dataset's specifications.
-2.	Create a fixation file: Generate a *fixation.json* file in the same format as *coco_freeview_fixations_all.json*. If your dataset doesn't have specific image categories, you can set the "task" to "none".
+2.	Create a fixation file: Generate a *fixation.json* file in the same format as *coco_freeview_fixations_all.json*. If your dataset doesn't have specific image categories, you can set the "task" to "none". One important note: HAT assumes that the subject values are continuous integers starting from 1. Please ensure this if you plan to conduct experiments related to subjects.
 3.	Load your dataset: Refer to the implementations for loading OSIE and MIT1003 in hat/builder.py, common/dataset.py, and common/data.py as a guide to integrate your own dataset.
 4.	Sequence Score calculation: We will soon release the code for computing *cluster.npy*, which is required for calculating the Sequence Score. Currently, Sequence Score and Semantic Sequence Score are only supported for COCO-Search18 and COCO-Freeview datasets. For now, skip this calculation during evaluation.
 
