@@ -944,20 +944,20 @@ def get_prior_maps(gt_scanpaths, im_w, im_h, visual_angle=24):
     return prior_maps
 
 
-def transform_fixations(normalized_fixations,
-                        is_padding,
-                        PAD_IDX,
-                        EOS_IDX,
-                        n_special_symbols):
-    """Transform a batch of fixation into sequences of categorical labels."""
-    patch_num = hparams.Data.patch_num
-    fixs = normalized_fixations * torch.Tensor(patch_num)
-    labels = patch_num[0] * fixs[:, :, 1] + fixs[:, :, 0]
-    labels += n_special_symbols
-    labels[is_padding==1] = PAD_IDX
-    term_idx = is_padding.argmax(dim=1)
-    labels[torch.arange(len(labels))[term_idx>0], term_idx[term_idx>0]]= EOS_IDX
-    return labels.to(torch.long).transpose(0,1)
+# def transform_fixations(normalized_fixations,
+#                         is_padding,
+#                         PAD_IDX,
+#                         EOS_IDX,
+#                         n_special_symbols):
+#     """Transform a batch of fixation into sequences of categorical labels."""
+#     patch_num = hparams.Data.patch_num
+#     fixs = normalized_fixations * torch.Tensor(patch_num)
+#     labels = patch_num[0] * fixs[:, :, 1] + fixs[:, :, 0]
+#     labels += n_special_symbols
+#     labels[is_padding==1] = PAD_IDX
+#     term_idx = is_padding.argmax(dim=1)
+#     labels[torch.arange(len(labels))[term_idx>0], term_idx[term_idx>0]]= EOS_IDX
+#     return labels.to(torch.long).transpose(0,1)
 
 
 def get_IoM(bb1, bb2):
