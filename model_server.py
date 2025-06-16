@@ -9,7 +9,8 @@ from flask import Flask, request
 from PIL import Image
 from torchvision import transforms
 
-from common.utils import JsonConfig, transform_fixations
+from common.config import JsonConfig
+from common.utils import transform_fixations
 from hat.models import HumanAttnTransformer
 
 # Flask server
@@ -20,9 +21,31 @@ app.logger.setLevel("DEBUG")
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 app.logger.info(f"Using device: {device}")
 
-# Initialize model, config and load checkpoint
+# Initialize model, config and download checkpoint
 # Note: The model is initialized in freeview mode (Target present and absent modes are not supported)
 hparams = JsonConfig("configs/coco_freeview_dense_SSL.json")
+
+# Download checkpoint if not exists
+checkpoint_path = "./checkpoints/HAT_FV.pt"
+if not os.path.exists(checkpoint_path):
+    os.makedirs("./checkpoints", exist_ok=True)
+    wget.download(
+        "http://vision.cs.stonybrook.edu/~cvlab_download/HAT/HAT_FV.pt", "checkpoints/"
+    )
+
+if not os.path.exists(f"./pretrained_models/M2F_R50_MSDeformAttnPixelDecoder.pkl"):
+    if not os.path.exists("./pretrained_models/"):
+        os.mkdir("./pretrained_models")
+
+    app.logger.info("Downloading pretrained model weights...")
+    urls = [
+        "http://vision.cs.stonybrook.edu/~cvlab_download/HAT/pretrained_models/M2F_R50_MSDeformAttnPixelDecoder.pkl",
+        "http://vision.cs.stonybrook.edu/~cvlab_download/HAT/pretrained_models/M2F_R50.pkl",
+    ]
+    for url in urls:
+        wget.download(url, "pretrained_models/")
+
+# Initialize model
 model = HumanAttnTransformer(
     hparams.Data,
     num_decoder_layers=hparams.Model.n_dec_layers,
@@ -48,26 +71,6 @@ model = HumanAttnTransformer(
     is_pretraining=False,
     output_feature_map_name=hparams.Model.output_feature_map_name,
 ).to(device)
-
-# Download checkpoint if not exists
-checkpoint_path = "./checkpoints/HAT_FV.pt"
-if not os.path.exists(checkpoint_path):
-    os.makedirs("./checkpoints", exist_ok=True)
-    wget.download(
-        "http://vision.cs.stonybrook.edu/~cvlab_download/HAT/HAT_FV.pt", "checkpoints/"
-    )
-
-if not os.path.exists(f"./pretrained_models/M2F_R50_MSDeformAttnPixelDecoder.pkl"):
-    if not os.path.exists("./pretrained_models/"):
-        os.mkdir("./pretrained_models")
-
-    app.logger.info("Downloading pretrained model weights...")
-    urls = [
-        "http://vision.cs.stonybrook.edu/~cvlab_download/HAT/pretrained_models/M2F_R50_MSDeformAttnPixelDecoder.pkl",
-        "http://vision.cs.stonybrook.edu/~cvlab_download/HAT/pretrained_models/M2F_R50.pkl",
-    ]
-    for url in urls:
-        wget.download(url, "pretrained_models/")
 
 # The model weights are modified below due to changes in Detectron2
 ckpt = torch.load(checkpoint_path, map_location="cpu")
