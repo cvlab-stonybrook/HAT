@@ -4,7 +4,6 @@ from io import BytesIO
 import numpy as np
 import orjson
 import torch
-import wget
 from flask import Flask, request
 from PIL import Image
 from torchvision import transforms
@@ -21,31 +20,9 @@ app.logger.setLevel("DEBUG")
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 app.logger.info(f"Using device: {device}")
 
-# Initialize model, config and download checkpoint
+# Initialize model, config and load checkpoint
 # Note: The model is initialized in freeview mode (Target present and absent modes are not supported)
 hparams = JsonConfig("configs/coco_freeview_dense_SSL.json")
-
-# Download checkpoint if not exists
-checkpoint_path = "./checkpoints/HAT_FV.pt"
-if not os.path.exists(checkpoint_path):
-    os.makedirs("./checkpoints", exist_ok=True)
-    wget.download(
-        "http://vision.cs.stonybrook.edu/~cvlab_download/HAT/HAT_FV.pt", "checkpoints/"
-    )
-
-if not os.path.exists(f"./pretrained_models/M2F_R50_MSDeformAttnPixelDecoder.pkl"):
-    if not os.path.exists("./pretrained_models/"):
-        os.mkdir("./pretrained_models")
-
-    app.logger.info("Downloading pretrained model weights...")
-    urls = [
-        "http://vision.cs.stonybrook.edu/~cvlab_download/HAT/pretrained_models/M2F_R50_MSDeformAttnPixelDecoder.pkl",
-        "http://vision.cs.stonybrook.edu/~cvlab_download/HAT/pretrained_models/M2F_R50.pkl",
-    ]
-    for url in urls:
-        wget.download(url, "pretrained_models/")
-
-# Initialize model
 model = HumanAttnTransformer(
     hparams.Data,
     num_decoder_layers=hparams.Model.n_dec_layers,
@@ -73,13 +50,14 @@ model = HumanAttnTransformer(
 ).to(device)
 
 # The model weights are modified below due to changes in Detectron2
+checkpoint_path = "./checkpoints/HAT_FV.pt"
 ckpt = torch.load(checkpoint_path, map_location="cpu")
 ckpt_new = ckpt.copy()
 for k, v in list(ckpt["model"].items()):
     if "stages." in k:
         ckpt_new["model"][k.replace("stages.", "")] = v
         ckpt_new["model"].pop(k)
-model.load_state_dict(ckpt_new["model"].to(device))
+model.load_state_dict(ckpt_new["model"])
 model.eval()
 
 # Image Transform
@@ -97,7 +75,8 @@ def get_fixation_history(x_hist, y_hist, stimulus_shape):
     # Fixations are normalized and truncated to max_traj_length (20 in case of freeview)
     x_hist = x_hist / stimulus_shape[1]
     y_hist = y_hist / stimulus_shape[0]
-    fixation_hist = np.stack([x_hist, y_hist], axis=0).unsqueeze(0)
+    fixation_hist = np.stack([x_hist, y_hist], axis=0)
+    fixation_hist = np.expand_dims(fixation_hist, axis=0)
     fixation_hist = fixation_hist[:, -hparams.Data.max_traj_length :, :]
     return fixation_hist
 
@@ -118,13 +97,15 @@ def conditional_log_density():
     # Make tensors for model
     # Image is resized to (320, 512) for compatibility with the model
     image_tensor = transform(image).to(device)
-    normalized_fixs = torch.tensor(fixation_hist, device=device)
+    normalized_fixs = torch.tensor(fixation_hist)
     task_ids = torch.tensor(
         [0], device=device
     )  # task_ids are not used in freeview mode
     ys, ys_high = transform_fixations(
         normalized_fixs, None, hparams.Data, False, return_highres=True
     )  # transform fixations to categorical labels
+    ys = ys.to(device)
+    ys_high = ys_high.to(device)
     padding = None
 
     with torch.no_grad():
@@ -148,7 +129,7 @@ def conditional_log_density():
 
         # Create conditional log density from heatmap
         heatmap = torch.nn.functional.interpolate(
-            heatmap.unsqueeze(1),  # (1, 1, H, W)
+            heatmap.view(1, 1, hparams.Data.im_h, hparams.Data.im_w),  # (1, 1, H, W)
             size=(stimulus.shape[0], stimulus.shape[1]),
             mode="nearest",
         )
