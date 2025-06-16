@@ -8,7 +8,10 @@ ENV FORCE_CUDA=1
 ENV TORCH_CUDA_ARCH_LIST="7.5;8.0;8.6"
 
 RUN apt-get update \
-    && apt-get -y install gcc g++ git \
+    && apt-get -y install gcc \
+    g++ \
+    git \
+    wget \
     libgl1-mesa-glx \
     libglib2.0-0 \
     libsm6 \
@@ -22,7 +25,7 @@ COPY ./configs ./configs
 COPY ./hat ./hat
 COPY ./model_server.py ./model_server.py
 COPY ./requirements.txt ./requirements.txt
-COPY ./startup.sh ./startup.sh
+COPY ./download_checkpoints.sh ./download_checkpoints.sh
 
 RUN python -m pip install --no-cache -U pip setuptools \
     && python -m pip install --no-cache -r requirements.txt \
@@ -34,9 +37,9 @@ RUN chmod +x ./hat/pixel_decoder/ops/make.sh \
     && cd ./hat/pixel_decoder/ops \
     && ./make.sh
 
-# RUN chmod +x ./startup.sh
+RUN chmod +x ./download_checkpoints.sh \
+    && ./download_checkpoints.sh
 
 EXPOSE $HTTP_PORT
 
-# CMD ./startup.sh && gunicorn -w 1 -b 0.0.0.0:4000 --pythonpath . --access-logfile - model_server:app
 CMD ["gunicorn", "-w", "1", "-b", "0.0.0.0:4000", "--pythonpath", ".", "--access-logfile", "-", "model_server:app"]
