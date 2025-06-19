@@ -132,6 +132,8 @@ def conditional_log_density():
             size=(image.size[1], image.size[0]),  # (height, width)
             mode="bicubic",
         )
+        # bicubic interpolation can create negative value; clamp to epsilon for stability
+        heatmap = heatmap.clamp(min=1e-30)
         prob = heatmap.view(image.size[1], image.size[0]) / heatmap.sum()
         log_density = prob.log()
 
