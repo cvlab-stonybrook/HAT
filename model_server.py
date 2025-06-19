@@ -71,11 +71,11 @@ transform = transforms.Compose(
 )
 
 
-def get_fixation_history(x_hist, y_hist, stimulus_shape):
+def get_fixation_history(x_hist, y_hist, image_size):
     # Fixations are normalized and truncated to max_traj_length (20 in case of freeview)
-    x_hist = x_hist / stimulus_shape[1]
-    y_hist = y_hist / stimulus_shape[0]
-    fixation_hist = np.stack([x_hist, y_hist], axis=0)
+    x_hist = x_hist / image_size[0]
+    y_hist = y_hist / image_size[1]
+    fixation_hist = np.stack([x_hist, y_hist], axis=1)
     fixation_hist = np.expand_dims(fixation_hist, axis=0)
     fixation_hist = fixation_hist[:, -hparams.Data.max_traj_length :, :]
     return fixation_hist
@@ -86,13 +86,12 @@ def conditional_log_density():
     # Extract stimulus
     image_bytes = request.files["stimulus"].read()
     image = Image.open(BytesIO(image_bytes))
-    stimulus = np.array(image)
 
     # Extract scanpath history
     data = orjson.loads(request.form["json_data"])
     x_hist = np.array(data["x_hist"])
     y_hist = np.array(data["y_hist"])
-    fixation_hist = get_fixation_history(x_hist, y_hist, stimulus.shape)
+    fixation_hist = get_fixation_history(x_hist, y_hist, image.size)
 
     # Make tensors for model
     # Image is resized to (320, 512) for compatibility with the model
@@ -130,10 +129,10 @@ def conditional_log_density():
         # Create conditional log density from heatmap
         heatmap = torch.nn.functional.interpolate(
             heatmap.view(1, 1, hparams.Data.im_h, hparams.Data.im_w),  # (1, 1, H, W)
-            size=(stimulus.shape[0], stimulus.shape[1]),
-            mode="nearest",
+            size=(image.size[1], image.size[0]),  # (height, width)
+            mode="bicubic",
         )
-        prob = heatmap.view(stimulus.shape[0], stimulus.shape[1]) / heatmap.sum()
+        prob = heatmap.view(image.size[1], image.size[0]) / heatmap.sum()
         log_density = prob.log()
 
     log_density_list = log_density.cpu().tolist()
