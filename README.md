@@ -19,8 +19,10 @@ CVPR 2024 "Unifying Top-down and Bottom-up Scanpath Prediction Using Transformer
     url = f"http://vision.cs.stonybrook.edu/~cvlab_download/HAT/pretrained_models/M2F_R50.pkl"
     wget.download(url, 'pretrained_models/')
    ```
+- Dataset: https://sites.google.com/view/cocosearch/coco-freeview
 - Prepare the data following https://github.com/cvlab-stonybrook/Scanpath_Prediction.
-- Download data from https://drive.google.com/drive/folders/1GOmWlDpG6Lh7iPlt9Hi9GWZ4BAfwhmHR?usp=drive_link.
+
+
 #### Try out the [demo code](https://github.com/cvlab-stonybrook/HAT/blob/main/demo.ipynb) to generate a scanpath for your test image!
 #### Commands
 - Train a model on COCO-Search18 with
