@@ -31,7 +31,7 @@ RUN python -m pip install --no-cache -U pip setuptools \
     && python -m pip install --no-cache -r requirements.txt \
     && python -m pip install gunicorn orjson flask
 
-RUN TORCH_CUDA_ARCH_LIST="7.5;8.0;8.6" FORCE_CUDA=1 python -m pip install 'git+https://github.com/facebookresearch/detectron2.git'
+RUN python -m pip install 'git+https://github.com/facebookresearch/detectron2.git'
 
 RUN chmod +x ./hat/pixel_decoder/ops/make.sh \
     && cd ./hat/pixel_decoder/ops \

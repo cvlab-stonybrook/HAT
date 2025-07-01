@@ -144,7 +144,7 @@ def conditional_log_density():
 
 @app.route("/type", methods=["GET"])
 def type():
-    type = "HumanAttnTransformer"
+    type = "ScanpathModel"
     version = "v1.0.0"
     return orjson.dumps({"type": type, "version": version})
 
