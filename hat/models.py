@@ -278,7 +278,8 @@ class ImageFeatureEncoder(nn.Module):
         add_maskformer2_config(cfg)
         cfg.merge_from_file(cfg_path)
         self.backbone = build_backbone(cfg)
-        # if os.path.exists(cfg.MODEL.WEIGHTS):
+        # Note: Weight keys are different in the currently available Detectron2 checkpoint.
+        # This change is necessary to make the code run with the currently available Detectron2 checkpoint.
         bb_weights = torch.load(cfg.MODEL.WEIGHTS,
                                 map_location=torch.device('cpu'))
         bb_weights_new = bb_weights.copy()
